@@ -1,0 +1,23 @@
+CAMPUSCONNECT — QUICK START
+
+1) Install Node.js 18+.
+2) Frontend only (demo mode):
+   cd client
+   npm install
+   cp .env.example .env
+   npm run dev
+   Open the localhost URL printed by Vite.
+
+3) Full stack:
+   Start MongoDB (local or Atlas).
+   In another terminal: cd server
+   npm install
+   cp .env.example .env
+   Edit .env: set MONGODB_URI and JWT_SECRET.
+   npm run dev
+   In client/.env set VITE_API_URL=http://localhost:5000/api and restart Vite.
+
+Docs: docs/API.md, docs/CODE_WALKTHROUGH.md, docs/VIVA_QUESTIONS.md
+Presentation: PRESENTATION.pptx
+
+Demo accounts are not pre-created. Use the authentication API with Postman or a REST client. The visual UI has a demo-mode guest experience.

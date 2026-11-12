@@ -1,0 +1,3 @@
+import mongoose from 'mongoose';
+const eventSchema=new mongoose.Schema({title:{type:String,required:true,trim:true},category:{type:String,required:true},date:{type:String,required:true},time:{type:String,required:true},location:{type:String,required:true},organizer:{type:String,required:true},description:{type:String,default:''},attendees:{type:Number,default:0,min:0},capacity:{type:Number,default:100,min:1},color:{type:String,default:'green'},tag:{type:String,default:'Registration open'}},{timestamps:true});
+export default mongoose.model('Event',eventSchema);

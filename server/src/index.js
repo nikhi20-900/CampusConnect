@@ -1,0 +1,23 @@
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import authRoutes from './routes/auth.js';
+import eventRoutes from './routes/events.js';
+import clubRoutes from './routes/clubs.js';
+import resourceRoutes from './routes/resources.js';
+import {seedIfEmpty} from './utils/seed.js';
+const app=express();
+const allowedOrigins=(process.env.CLIENT_ORIGIN||'http://localhost:5173').split(',').map(origin=>origin.trim()).filter(Boolean);
+app.use(cors({origin:(origin,callback)=>callback(null,!origin||allowedOrigins.includes(origin))}));
+app.use(express.json({limit:'1mb'}));
+app.get('/api/health',(req,res)=>res.json({status:'ok',service:'CampusConnect API',database:mongoose.connection.readyState===1?'connected':'disconnected',timestamp:new Date().toISOString()}));
+app.use('/api/auth',authRoutes);
+app.use('/api/events',eventRoutes);
+app.use('/api/clubs',clubRoutes);
+app.use('/api/resources',resourceRoutes);
+app.use((req,res)=>res.status(404).json({message:'API route not found.'}));
+app.use((err,req,res,next)=>{console.error(err);if(err.name==='CastError')return res.status(400).json({message:'Invalid resource ID.'});if(err.code===11000)return res.status(409).json({message:'A record with this value already exists.'});res.status(500).json({message:'Unexpected server error.'});});
+const port=Number(process.env.PORT)||5000;
+async function start(){if(!process.env.JWT_SECRET){console.error('JWT_SECRET is required. Copy .env.example to .env and set a secret.');process.exit(1);}try{await mongoose.connect(process.env.MONGODB_URI||'mongodb://127.0.0.1:27017/campusconnect');await seedIfEmpty();console.log('MongoDB connected and demo data checked.');}catch(e){console.error('Could not connect to MongoDB:',e.message);console.error('Start MongoDB or configure MONGODB_URI before running the API.');process.exit(1);}app.listen(port,()=>console.log(`CampusConnect API listening at http://localhost:${port}`));}
+start();
